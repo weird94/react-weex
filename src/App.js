@@ -1,24 +1,34 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
 
 function App() {
+  const [tag, setTag] = useState(false);
+  function onClick() {
+    setTag(!tag);
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div
+      style={{
+        flex: 1,
+        backgroundColor: tag ? 'red' : 'yellow',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}
+      onClick={onClick}
+    >
+      <div
+        style={{
+          width: '250wx',
+          height: '250wx',
+          backgroundColor: 'white',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >
+        <text value='hello world' style={{ fontSize: '28wx' }}>
+          {/* {'hello world'} */}
+        </text>
+      </div>
     </div>
   );
 }
