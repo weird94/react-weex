@@ -24,4 +24,4 @@ yarn-error.log*
 .cache/
 dist/
 
-yarn.lock
+yarn.lock*
