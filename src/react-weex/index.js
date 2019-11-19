@@ -28,21 +28,13 @@ const hostConfig = {
    This is where react-reconciler wants to create an instance of UI element in terms of the target. Since our target here is the DOM, we will create document.createElement and type is the argument that contains the type string like div or img or h1 etc. The initial values of domElement attributes can be set in this function from the newProps argument
    */
   createInstance: (type, newProps, rootContainerInstance, _currentHostContext, workInProgress) => {
-    if (type === 'text') {
-      if (newProps.children) {
-        if (typeof newProps.children === 'string' || typeof newProps.children === 'number') {
-          newProps.value = newProps.children;
-        }
-      }
-    }
-
-    // console.log('newProps', newProps);
     return weexDriver.createElement({ type, props: newProps });
   },
-  createTextInstance: text => {
-    return weexDriver.createText(text);
-  },
+  // createTextInstance: text => {
+  //   return weexDriver.createText(text);
+  // },
   appendInitialChild: (parent, child) => {
+
     weexDriver.appendChild(child, parent);
   },
   appendChild(parent, child) {
@@ -53,6 +45,7 @@ const hostConfig = {
   appendChildToContainer: (parent, child) => {
     weexDriver.appendChild(child, parent);
   },
+  // 计算出一个更新的 updatePayload
   prepareUpdate(domElement, oldProps, newProps) {
     return true;
   },
@@ -81,9 +74,9 @@ const hostConfig = {
       }
     });
   },
-  commitTextUpdate(textInstance, oldText, newText) {
-    weexDriver.updateText(textInstance, newText);
-  },
+  // commitTextUpdate(textInstance, oldText, newText) {
+  //   weexDriver.updateText(textInstance, newText);
+  // },
   removeChild(parentInstance, child) {
     weexDriver.removeChild(child, parentInstance);
   }
