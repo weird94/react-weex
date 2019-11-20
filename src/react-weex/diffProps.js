@@ -1,7 +1,8 @@
 import Queue from './queue';
 import { TEXT, STYLE, CHILDREN, EVENT_PREFIX_REGEXP } from './util';
 import { getChildrenText } from './textUtil';
-import weexDriver from 'weex-driver';
+import * as weexDriver from 'driver-weex';
+import { hasOwnProperty } from './util';
 
 export const updateTypes = {
   reset: 0,
@@ -100,7 +101,7 @@ export default function diffProps(domElement, _type, oldProps, newProps) {
   return updatePayload;
 }
 
-export const applyUpdate = (update, domElement) => {
+export const applyUpdate = (update, domElement, props) => {
   const { op, name, value } = update;
 
   switch (op) {
@@ -111,13 +112,13 @@ export const applyUpdate = (update, domElement) => {
       weexDriver.setAttribute(domElement, name, value);
       break;
     case updateTypes.addEvent:
-      weexDriver.addEventListener(domElement, name, value);
+      weexDriver.addEventListener(domElement, name, value, props);
       break;
     case updateTypes.removeEvent:
       weexDriver.removeEventListener(domElement, name, value);
       break;
     case updateTypes.setStyle:
-      weexDriver.setStyles(domElement, value);
+      weexDriver.setStyle(domElement, value);
       break;
     default:
       break;

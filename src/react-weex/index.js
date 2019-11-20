@@ -1,5 +1,5 @@
 import ReactReconciler from 'react-reconciler';
-import weexDriver from 'weex-driver';
+import * as weexDriver from 'driver-weex';
 import { getTextProps } from './textUtil';
 import diffProps, { applyUpdate } from './diffProps';
 
@@ -36,15 +36,9 @@ const hostConfig = {
     _workInProgress
   ) => {
     if (type === 'text') {
-      return weexDriver.createElement({
-        type,
-        props: getTextProps(newProps)
-      });
+      return weexDriver.createElement(type, getTextProps(newProps));
     } else {
-      return weexDriver.createElement({
-        type,
-        props: newProps
-      });
+      return weexDriver.createElement(type, newProps);
     }
   },
   createTextInstance: text => {
@@ -64,9 +58,9 @@ const hostConfig = {
   // 计算出一个更新的 updatePayload
   // DOM 节点的 diff 计算
   prepareUpdate: diffProps,
-  commitUpdate(domElement, _updatePayload, type, oldProps, newProps) {
-    _updatePayload.forEach(update => {
-      applyUpdate(update, domElement);
+  commitUpdate(domElement, updatePayload, _type, _oldProps, newProps) {
+    updatePayload.forEach(update => {
+      applyUpdate(update, domElement, newProps);
     });
   },
   commitTextUpdate(textInstance, _oldText, newText) {
@@ -81,7 +75,7 @@ const ReactReconcilerInst = ReactReconciler(hostConfig);
 
 export default {
   render: (reactElement, callback) => {
-    const domElement = weexDriver.createBody();
+    const domElement = weexDriver.createBody('div', { style: { flex: 1 } });
     if (!domElement._rootContainer) {
       domElement._rootContainer = ReactReconcilerInst.createContainer(
         domElement,
