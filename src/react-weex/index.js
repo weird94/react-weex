@@ -1,8 +1,7 @@
 import ReactReconciler from 'react-reconciler';
 import weexDriver from 'weex-driver';
-// import alert from 'universal-alert';
-
-const EVENT_PREFIX_REGEXP = /^on[A-Z]/;
+import { getTextProps } from './textUtil';
+import diffProps, { applyUpdate } from './diffProps';
 
 const rootHostContext = {};
 const childHostContext = {};
@@ -22,27 +21,31 @@ const hostConfig = {
     return childHostContext;
   },
   // 判断是否应该直接设置 text, 在weex中应该是true, 因为weex中没有 TextInstance
-  shouldSetTextContent: (type, nextProps) => {
+  shouldSetTextContent: (type, _nextProps) => {
     return type === 'text';
     // return false;
   },
   resetTextContent: parent => {
     weexDriver.updateText(parent, '');
   },
-  /**
-   This is where react-reconciler wants to create an instance of UI element in terms of the target. Since our target here is the DOM, we will create document.createElement and type is the argument that contains the type string like div or img or h1 etc. The initial values of domElement attributes can be set in this function from the newProps argument
-   */
   createInstance: (
     type,
     newProps,
-    rootContainerInstance,
+    _rootContainerInstance,
     _currentHostContext,
-    workInProgress
+    _workInProgress
   ) => {
-    return weexDriver.createElement({
-      type,
-      props: type === 'text' ? { ...newProps, value: newProps.children } : newProps
-    });
+    if (type === 'text') {
+      return weexDriver.createElement({
+        type,
+        props: getTextProps(newProps)
+      });
+    } else {
+      return weexDriver.createElement({
+        type,
+        props: newProps
+      });
+    }
   },
   createTextInstance: text => {
     return weexDriver.createText(text);
@@ -53,43 +56,20 @@ const hostConfig = {
   appendChild(parent, child) {
     weexDriver.appendChild(child, parent);
   },
-  finalizeInitialChildren: (domElement, type, props) => {},
+  finalizeInitialChildren: (_domElement, _type, _props) => {},
   supportsMutation: true,
   appendChildToContainer: (parent, child) => {
     weexDriver.appendChild(child, parent);
   },
   // 计算出一个更新的 updatePayload
-  prepareUpdate(domElement, oldProps, newProps) {
-    return true;
-  },
-  commitUpdate(domElement, updatePayload, type, oldProps, newProps) {
-    const keys = [
-      ...new Set([...Object.keys(newProps), ...Object.keys(oldProps)])
-    ];
-    keys.forEach(propName => {
-      const propValue = newProps[propName];
-      const oldPropValue = oldProps[propName];
-      if (propName === 'children') {
-        if (type === 'text') {
-          // domElement.value = propValue;
-          weexDriver.setAttribute(domElement, 'value', propValue);
-        }
-      } else if (propName === 'style') {
-        weexDriver.setStyles(domElement, newProps[propName]);
-      } else if (propValue === undefined) {
-        weexDriver.removeAttribute(domElement, propName, propValue);
-      } else if (EVENT_PREFIX_REGEXP.test(propName)) {
-        const eventName = propName.slice(2).toLowerCase();
-        if (oldPropValue !== propValue) {
-          weexDriver.removeEventListener(domElement, eventName, oldPropValue);
-          weexDriver.addEventListener(domElement, eventName, propValue);
-        }
-      } else {
-        weexDriver.setAttribute(domElement, propName, propValue);
-      }
+  // DOM 节点的 diff 计算
+  prepareUpdate: diffProps,
+  commitUpdate(domElement, _updatePayload, type, oldProps, newProps) {
+    _updatePayload.forEach(update => {
+      applyUpdate(update, domElement);
     });
   },
-  commitTextUpdate(textInstance, oldText, newText) {
+  commitTextUpdate(textInstance, _oldText, newText) {
     weexDriver.updateText(textInstance, newText);
   },
   removeChild(parentInstance, child) {
@@ -108,7 +88,6 @@ export default {
         false
       );
     }
-
     // update the root Container
     return ReactReconcilerInst.updateContainer(
       reactElement,

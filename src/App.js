@@ -1,21 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+
+var Alert = function(message) {
+  return new Promise(function(resolve) {
+    var modal = weex.requireModule('modal');
+    modal.alert(
+      {
+        message: message,
+        okTitle: 'ok'
+      },
+      function() {
+        resolve();
+      }
+    );
+  });
+};
 
 function App() {
   const [tag, setTag] = useState(false);
+
   function onClick() {
     setTag(!tag);
   }
 
+  const style = {
+    flex: 1,
+    backgroundColor: tag ? 'red' : 'yellow',
+    alignItems: 'center',
+    justifyContent: 'center'
+  };
+
   return (
-    <div
-      style={{
-        flex: 1,
-        backgroundColor: tag ? 'red' : 'yellow',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}
-      onClick={onClick}
-    >
+    <div style={style} onClick={onClick}>
       <div
         style={{
           width: '250wx',
@@ -25,9 +40,7 @@ function App() {
           justifyContent: 'center'
         }}
       >
-        <text style={{ fontSize: '28wx' }}>
-          hello world
-        </text>
+        <text style={{ fontSize: '28wx' }}>hello world</text>
       </div>
     </div>
   );
