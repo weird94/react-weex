@@ -3,11 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@types/react-reconciler": "^0.18.0",
     "driver-weex": "^1.0.1",
     "react": "^16.12.0",
-    "react-reconciler": "^0.23.0",
-    "universal-alert": "^1.0.1"
+    "react-reconciler": "^0.23.0"
   },
   "scripts": {
     "weex": "parcel src/index.js",
@@ -21,6 +19,8 @@
     "eslint": "^6.6.0",
     "eslint-config-react-app": "^5.0.2",
     "eslint-plugin-react": "^7.16.0",
-    "parcel-bundler": "^1.12.4"
+    "parcel-bundler": "^1.12.4",
+    "parcel-plugin-wrapper": "^0.2.2",
+    "universal-alert": "^1.0.1"
   }
 }

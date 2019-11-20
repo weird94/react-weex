@@ -15,7 +15,11 @@ var Alert = function(message) {
 
 Alert('start');
 
-// alert('test alert');
+try {
+  alert('test alert');
+} catch (error) {
+  Alert(error.message);
+}
 
 import React from 'react';
 import ReactWeex from './react-weex';
