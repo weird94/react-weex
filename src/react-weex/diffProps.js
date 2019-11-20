@@ -25,8 +25,8 @@ export default function diffProps(domElement, _type, oldProps, newProps) {
 
   for (let propName in oldProps) {
     if (
-      oldProps.hasOwnProperty(propName) &&
-      !newProps.hasOwnProperty(propName)
+      hasOwnProperty.call(oldProps, propName) &&
+      !hasOwnProperty.call(newProps, propName)
     ) {
       const propValue = oldProps[propName];
       if (propName === CHILDREN) {
