@@ -1,5 +1,6 @@
 import ReactReconciler from 'react-reconciler';
 import weexDriver from 'weex-driver';
+// import alert from 'universal-alert';
 
 const EVENT_PREFIX_REGEXP = /^on[A-Z]/;
 
@@ -20,21 +21,33 @@ const hostConfig = {
   getChildHostContext: () => {
     return childHostContext;
   },
-  shouldSetTextContent: (type, props) => {
-    // return typeof props.children === 'string' || typeof props.children === 'number';
+  // 判断是否应该直接设置 text, 在weex中应该是true, 因为weex中没有 TextInstance
+  shouldSetTextContent: (type, nextProps) => {
     return type === 'text';
+    // return false;
+  },
+  resetTextContent: parent => {
+    weexDriver.updateText(parent, '');
   },
   /**
    This is where react-reconciler wants to create an instance of UI element in terms of the target. Since our target here is the DOM, we will create document.createElement and type is the argument that contains the type string like div or img or h1 etc. The initial values of domElement attributes can be set in this function from the newProps argument
    */
-  createInstance: (type, newProps, rootContainerInstance, _currentHostContext, workInProgress) => {
-    return weexDriver.createElement({ type, props: newProps });
+  createInstance: (
+    type,
+    newProps,
+    rootContainerInstance,
+    _currentHostContext,
+    workInProgress
+  ) => {
+    return weexDriver.createElement({
+      type,
+      props: type === 'text' ? { ...newProps, value: newProps.children } : newProps
+    });
   },
-  // createTextInstance: text => {
-  //   return weexDriver.createText(text);
-  // },
+  createTextInstance: text => {
+    return weexDriver.createText(text);
+  },
   appendInitialChild: (parent, child) => {
-
     weexDriver.appendChild(child, parent);
   },
   appendChild(parent, child) {
@@ -50,7 +63,9 @@ const hostConfig = {
     return true;
   },
   commitUpdate(domElement, updatePayload, type, oldProps, newProps) {
-    const keys = [...new Set([...Object.keys(newProps), ...Object.keys(oldProps)])];
+    const keys = [
+      ...new Set([...Object.keys(newProps), ...Object.keys(oldProps)])
+    ];
     keys.forEach(propName => {
       const propValue = newProps[propName];
       const oldPropValue = oldProps[propName];
@@ -74,9 +89,9 @@ const hostConfig = {
       }
     });
   },
-  // commitTextUpdate(textInstance, oldText, newText) {
-  //   weexDriver.updateText(textInstance, newText);
-  // },
+  commitTextUpdate(textInstance, oldText, newText) {
+    weexDriver.updateText(textInstance, newText);
+  },
   removeChild(parentInstance, child) {
     weexDriver.removeChild(child, parentInstance);
   }
@@ -88,7 +103,10 @@ export default {
   render: (reactElement, callback) => {
     const domElement = weexDriver.createBody();
     if (!domElement._rootContainer) {
-      domElement._rootContainer = ReactReconcilerInst.createContainer(domElement, false);
+      domElement._rootContainer = ReactReconcilerInst.createContainer(
+        domElement,
+        false
+      );
     }
 
     // update the root Container

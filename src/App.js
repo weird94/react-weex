@@ -25,8 +25,8 @@ function App() {
           justifyContent: 'center'
         }}
       >
-        <text value='hello world' style={{ fontSize: '28wx' }}>
-          {/* {'hello world'} */}
+        <text style={{ fontSize: '28wx' }}>
+          hello world
         </text>
       </div>
     </div>
