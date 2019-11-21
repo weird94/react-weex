@@ -22,8 +22,6 @@ export default function diffProps(domElement, _type, oldProps, newProps) {
   const isTextNode = _type === TEXT;
   let updatePayload = new Queue();
 
-  const keys = Object.keys(oldProps);
-
   for (let propName in oldProps) {
     if (
       hasOwnProperty.call(oldProps, propName) &&
