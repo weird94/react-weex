@@ -18,8 +18,8 @@ export const updateTypes = {
  * @param {Object} oldProps
  * @param {Object} newProps
  */
-export default function diffProps(domElement, _type, oldProps, newProps) {
-  const isTextNode = _type === TEXT;
+export default function diffProps(_domElement, type, oldProps, newProps) {
+  const isTextNode = type === TEXT;
   let updatePayload = new Queue();
 
   for (let propName in oldProps) {
